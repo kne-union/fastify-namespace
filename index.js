@@ -3,17 +3,8 @@ const autoload = require('@fastify/autoload');
 const fs = require('fs');
 module.exports = fp(
   async (fastify, options) => {
-    const {
-      name: baseName,
-      modules,
-      options: otherOptions
-    } = Object.assign(
-      {
-        modules: {}
-      },
-      options
-    );
-    const proxy = {};
+    const { name: baseName, modules, options: otherOptions } = options;
+    const proxy = { options: otherOptions };
     for (let [name, module] of modules) {
       const stat = typeof module === 'string' && (await fs.promises.stat(module));
       (() => {
