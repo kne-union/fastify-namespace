@@ -6,7 +6,8 @@ module.exports = fp(
     const { name: baseName, modules, options: otherOptions } = options;
     const proxy = { options: otherOptions };
     for (let [name, module] of modules) {
-      const stat = typeof module === 'string' && (await fs.promises.stat(module));
+      const stat = typeof module === 'string' && (await fs.promises.stat(module).catch(() => {
+      }));
       (() => {
         if (stat && stat.isDirectory()) {
           proxy[name] = {};
