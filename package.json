@@ -1,6 +1,6 @@
 {
   "name": "@kne/fastify-namespace",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "管理fastify插件的名字空间",
   "main": "index.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "prettier": "^3.2.5"
   },
   "dependencies": {
-    "@fastify/autoload": "^5.8.2",
-    "fastify-plugin": "^4.5.1"
+    "@fastify/autoload": "^6.0.2",
+    "fastify-plugin": "^5.0.1"
   }
 }
