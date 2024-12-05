@@ -1,5 +1,6 @@
 import fp from 'fastify-plugin';
 import autoload from '@fastify/autoload';
+import { merge } from 'lodash-es';
 import fs from 'node:fs';
 
 const namespace = fp(
@@ -26,7 +27,7 @@ const namespace = fp(
       })();
     }
     fastify.decorate(baseName, proxy);
-    fastify.decorate('namespace', Object.assign({}, fastify['namespace'], global));
+    fastify.decorate('namespace', merge({}, fastify['namespace'], global));
   },
   {
     name: 'fastify-namespace'
