@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const namespace = fp(
   async (fastify, options) => {
-    const { name: baseName, modules, options: otherOptions } = options;
+    const { name: baseName, global, modules, options: otherOptions } = Object.assign({}, { modules: [] }, options);
     const proxy = { options: otherOptions };
     for (let [name, module] of modules) {
       const stat = typeof module === 'string' && (await fs.promises.stat(module).catch(() => {}));
@@ -26,6 +26,7 @@ const namespace = fp(
       })();
     }
     fastify.decorate(baseName, proxy);
+    fastify.decorate('namespace', Object.assign({}, fastify['namespace'], global));
   },
   {
     name: 'fastify-namespace'
