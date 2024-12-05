@@ -1,8 +1,9 @@
 {
   "name": "@kne/fastify-namespace",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "管理fastify插件的名字空间",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "init": "husky",
     "build:md": "npx @kne/md-doc",
@@ -32,6 +33,7 @@
   },
   "homepage": "https://github.com/kne-union/fastify-namespace#readme",
   "devDependencies": {
+    "fastify": "^5.1.0",
     "husky": "^9.0.11",
     "prettier": "^3.2.5"
   },

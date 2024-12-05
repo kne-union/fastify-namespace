@@ -1,13 +1,13 @@
-const fp = require('fastify-plugin');
-const autoload = require('@fastify/autoload');
-const fs = require('fs');
-module.exports = fp(
+import fp from 'fastify-plugin';
+import autoload from '@fastify/autoload';
+import fs from 'node:fs';
+
+const namespace = fp(
   async (fastify, options) => {
     const { name: baseName, modules, options: otherOptions } = options;
     const proxy = { options: otherOptions };
     for (let [name, module] of modules) {
-      const stat = typeof module === 'string' && (await fs.promises.stat(module).catch(() => {
-      }));
+      const stat = typeof module === 'string' && (await fs.promises.stat(module).catch(() => {}));
       (() => {
         if (stat && stat.isDirectory()) {
           proxy[name] = {};
@@ -31,3 +31,5 @@ module.exports = fp(
     name: 'fastify-namespace'
   }
 );
+
+export default namespace;
