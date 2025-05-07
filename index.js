@@ -26,7 +26,11 @@ module.exports = fp(async (fastify, options) => {
     })();
   }
   fastify.decorate(baseName, proxy);
-  fastify.decorate('namespace', merge({}, fastify['namespace'], global));
+  if (!fastify.hasDecorator('namespace')) {
+    fastify.decorate('namespace', merge({}, fastify['namespace'], global));
+  } else {
+    fastify['namespace'] = merge({}, fastify['namespace'], global);
+  }
 }, {
   name: 'fastify-namespace'
 });
