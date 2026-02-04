@@ -16,9 +16,35 @@ npm i --save @kne/fastify-namespace
 
 ### 概述
 
-`fastify-namespace` 是一个轻量且强大的 Fastify 插件，旨在解决复杂项目中的模块化管理和命名空间隔离问题。它提供了优雅的自动加载机制，能够智能识别并加载目录或文件模块，为每个模块创建独立的命名空间代理，避免命名冲突。
+`fastify-namespace` 是一个专为 Fastify 生态系统设计的命名空间管理插件，旨在解决复杂项目中的模块化组织和命名冲突问题。它基于 Fastify Plugin 构建，提供了智能的模块自动加载能力，能够自动识别文件和目录模块，并为每个命名空间创建独立的代理对象。
 
-该插件的核心优势在于其灵活的全局配置合并功能，支持多个命名空间间的数据共享与隔离，特别适合 API 版本管理、插件聚合等场景。通过 `onMount` 钩子机制，开发者可以在模块挂载时执行自定义逻辑，实现更精细的控制。简洁的 API 设计和直观的配置方式，使得即使是大型项目也能轻松实现模块化的架构组织，提升代码的可维护性和可扩展性。
+该插件的核心价值在于其灵活的全局配置合并机制，支持多个命名空间之间的数据共享与隔离，特别适用于 API 版本管理、微服务架构等需要模块化隔离的场景。通过 `onMount` 钩子机制，开发者可以在模块挂载时执行自定义逻辑，实现更精细的模块生命周期管理。简洁直观的 API 设计使得即使是大型项目也能轻松实现优雅的模块化架构，显著提升代码的可维护性和可扩展性。
+
+### 核心特性
+
+- 智能模块加载：自动识别并加载文件模块和目录模块，支持使用 `@fastify/autoload` 进行目录批量加载
+- 命名空间隔离：为每个模块组创建独立的命名空间，通过 `fastify.<name>` 访问，有效避免命名冲突
+- 全局配置合并：支持多个命名空间间的全局配置深度合并，实现配置复用与定制化
+- 挂载事件钩子：提供 `onMount` 回调机制，在模块挂载时执行自定义逻辑
+- 灵活模块支持：支持字符串路径、对象、函数等多种模块配置方式
+
+### 应用场景
+
+适用于以下场景：
+
+- API 版本管理：为不同版本的 API 创建独立的命名空间（如 v1、v2），实现版本隔离和平滑升级
+- 插件聚合：将多个相关插件组织在同一个命名空间下，便于统一管理和访问
+- 微服务模块化：在单体应用中模拟微服务架构，将不同业务模块隔离到独立命名空间
+- 多租户系统：为不同租户创建独立的模块配置和全局变量
+- 功能模块解耦：将大型应用按功能领域拆分为多个命名空间，降低模块间耦合度
+
+### 技术优势
+
+- 零侵入设计：基于 Fastify Plugin 规范，不修改现有代码结构，开箱即用
+- 类型安全支持：提供 TypeScript 类型定义文件，获得完整的类型提示和检查
+- 轻量高效：依赖少、体积小，不影响应用性能
+- 易于测试：提供完善的单元测试，测试覆盖率高，保证代码质量
+- 灵活扩展：支持通过 `onMount` 钩子实现自定义扩展逻辑
 
 
 ### 示例
@@ -29,41 +55,30 @@ npm i --save @kne/fastify-namespace
 
 ### API
 
-### 核心配置项
+### 配置选项
 
-| 属性名 | 说明 | 类型 | 默认值 | 必填 |
-|--------|------|------|--------|------|
-| `name` | 命名空间名称 | string | - | 是 |
-| `modules` | 模块配置数组 | Array<[string, string\|object\|function]> | [] | 是 |
-| `global` | 全局共享变量 | object | {} | 否 |
-| `options` | 传递给模块的选项 | object | {} | 否 |
-| `onMount` | 模块挂载时的回调函数 | function | - | 否 |
+| 参数名 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| name | string | - | 命名空间的唯一标识符，通过 `fastify.<name>` 访问该命名空间 |
+| modules | Array<[string, string\|object\|function]> | [] | 模块配置数组，每个元素是 `[模块名, 模块]` 元组 |
+| global | object | {} | 全局共享对象，会与 `fastify.namespace.global` 进行深度合并 |
+| options | object | {} | 传递给被加载模块的选项对象，文件和目录模块都会收到此配置 |
+| onMount | function | - | 挂载钩子函数，当命名空间注册完成时调用 |
 
-### 模块配置项
+### 模块配置
 
-| 属性名 | 说明 | 类型 | 示例 |
-|--------|------|------|------|
-| `[0]` | 模块名称 | string | `'users'` |
-| `[1]` | 模块路径/对象/函数 | string\|object\|function | `'./routes/users.js'` 或 `userService` |
-
-### 类型定义 (TypeScript)
-
-```typescript
-interface NamespaceOptions {
-  name: string;
-  modules: Array<[string, string | object | Function]>;
-  global?: Record<string, any>;
-  options?: Record<string, any>;
-  onMount?: (fastify: FastifyInstance, name: string) => void;
-}
-```
-
-### 装饰器属性
-
-| 属性名 | 说明 | 类型 |
+| 参数名 | 类型 | 说明 |
 |--------|------|------|
-| `fastify.<name>` | 当前命名空间的代理对象 | object |
-| `fastify.namespace.modules` | 所有已注册的命名空间模块 | Record<string, object> |
-| `fastify.namespace.global` | 合并后的全局配置 | object |
-| `fastify.namespace.mountEvents` | 挂载事件回调数组 | Function[] |
+| [0] | string | 模块名称，用于在命名空间中访问 |
+| [1] | string\|object\|function | 模块路径、对象或函数 |
+
+### 装饰器
+
+| 装饰器名 | 类型 | 说明 |
+|----------|------|------|
+| fastify.<name> | object | 当前命名空间的代理对象，包含该命名空间下所有模块 |
+| fastify.namespace | object | 全局命名空间对象，包含所有已注册的命名空间信息 |
+| fastify.namespace.modules | Record<string, object> | 所有已注册的命名空间模块的集合 |
+| fastify.namespace.global | object | 合并后的全局配置对象 |
+| fastify.namespace.mountEvents | Function[] | 挂载事件回调数组，存储所有 onMount 回调 |
 
